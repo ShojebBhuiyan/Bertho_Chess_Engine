@@ -20,7 +20,7 @@
 //Globals
 
 extern U64 pawn_attacks[2][64];
-
+extern U64 knight_attacks[64];
 //Enums
 
 enum {
@@ -40,4 +40,5 @@ enum { White, Black };
 
 void print_bitBoard(U64 bitboard);
 U64 mask_pawn_attacks(int side, int square);
-void init_pawn_table();
+U64 mask_knight_attacks(int square);
+void init_attack_tables();
