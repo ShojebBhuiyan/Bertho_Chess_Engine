@@ -9,6 +9,8 @@ int main()
 		//	print_bitBoard(pawn_attacks[Black][square]);
 		//	print_bitBoard(knight_attacks[square]);
 		//  print_bitBoard(king_attacks[square]);
+		//  print_bitBoard(mask_bishop_occupancies(e4));
+		//  print_bitBoard(mask_rook_occupancies(e4));
 	
 	return 0;
 }

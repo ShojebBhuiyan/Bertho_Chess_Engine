@@ -88,6 +88,45 @@ U64 mask_king_attacks(int square)
 	return attacks;
 }
 
+U64 mask_bishop_occupancies(int square)
+{
+	U64 attacks = 0ULL;
+	int rank, file;
+	int t_rank = square / 8;
+	int t_file = square % 8;
+
+	for (rank = t_rank + 1, file = t_file + 1; rank <= 6; rank++, file++)
+		attacks |= (1ULL << (rank * 8 + file));
+	for (rank = t_rank - 1, file = t_file - 1; rank >= 1; rank--, file--)
+		attacks |= (1ULL << (rank * 8 + file));
+	for (rank = t_rank + 1, file = t_file - 1; rank <= 6 && file >= 1; rank++, file--)
+		attacks |= (1ULL << (rank * 8 + file));
+	for (rank = t_rank - 1, file = t_file + 1; rank >= 1 && file <= 6; rank--, file++)
+		attacks |= (1ULL << (rank * 8 + file));
+
+	return attacks;
+}
+
+U64 mask_rook_occupancies(int square)
+{
+	U64 attacks = 0ULL;
+	int rank, file;
+	int t_rank = square / 8;
+	int t_file = square % 8;
+
+	for (rank = t_rank + 1; rank <= 6; rank++)
+		attacks |= (1ULL << (rank * 8 + t_file));
+	for (rank = t_rank - 1; rank >= 1; rank--)
+		attacks |= (1ULL << (rank * 8 + t_file));
+	for (file = t_file + 1; file <= 6; file++)
+		attacks |= (1ULL << (t_rank * 8 + file));
+	for (file = t_file - 1; file >= 1; file--)
+		attacks |= (1ULL << (t_rank * 8 + file));
+
+	return attacks;
+}
+
+
 void init_attack_tables()
 {
 	for (int square = 0; square < 64; square++)

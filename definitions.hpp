@@ -44,4 +44,6 @@ void print_bitBoard(U64 bitboard);
 U64 mask_pawn_attacks(int side, int square);
 U64 mask_knight_attacks(int square);
 U64 mask_king_attacks(int square);
+U64 mask_bishop_occupancies(int square);
+U64 mask_rook_occupancies(int square);
 void init_attack_tables();
