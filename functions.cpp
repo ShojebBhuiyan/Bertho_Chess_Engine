@@ -2,6 +2,7 @@
 
 U64 pawn_attacks[2][64];
 U64 knight_attacks[64];
+U64 king_attacks[64];
 
 void print_bitBoard(U64 bitboard)
 {
@@ -20,7 +21,7 @@ void print_bitBoard(U64 bitboard)
 	}
 
 	std::cout << "\n    A B C D E F G H\n";
-	std::cout << "\nBitboard ID: " << bitboard;
+	std::cout << "\nBitboard ID: " << bitboard << "\n";
 }
 
 U64 mask_pawn_attacks(int side, int square)
@@ -37,12 +38,15 @@ U64 mask_pawn_attacks(int side, int square)
 		if ((bitboard >> 7) & not_A_file) attacks |= (bitboard >> 7);
 		if ((bitboard >> 9) & not_H_file) attacks |= (bitboard >> 9);
 	}
+
 	//Black Pawns
+
 	else
 	{
 		if ((bitboard << 7) & not_H_file) attacks |= (bitboard << 7);
 		if ((bitboard << 9) & not_A_file) attacks |= (bitboard << 9);
 	}
+
 	return attacks;
 }
 
@@ -65,6 +69,25 @@ U64 mask_knight_attacks(int square)
 	return attacks;
 }
 
+U64 mask_king_attacks(int square)
+{
+	U64 attacks = 0ULL;
+	U64 bitboard = 0ULL;
+
+	set_bit(bitboard, square);
+
+	if (bitboard >> 8) attacks |= (bitboard >> 8);
+	if (bitboard << 8) attacks |= (bitboard << 8);
+	if ((bitboard >> 1) & not_H_file) attacks |= (bitboard >> 1);
+	if ((bitboard << 1) & not_A_file) attacks |= (bitboard << 1);
+	if ((bitboard >> 9) & not_H_file) attacks |= (bitboard >> 9);
+	if ((bitboard << 9) & not_A_file) attacks |= (bitboard << 9);
+	if ((bitboard >> 7) & not_A_file) attacks |= (bitboard >> 7);
+	if ((bitboard << 7) & not_H_file) attacks |= (bitboard << 7);
+
+	return attacks;
+}
+
 void init_attack_tables()
 {
 	for (int square = 0; square < 64; square++)
@@ -77,5 +100,9 @@ void init_attack_tables()
 		//Knight Attack Tables
 
 		knight_attacks[square] = mask_knight_attacks(square);
+
+		//King Attack Tables
+
+		king_attacks[square] = mask_king_attacks(square);
 	}
 }
