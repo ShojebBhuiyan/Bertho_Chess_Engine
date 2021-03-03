@@ -4,6 +4,17 @@ U64 pawn_attacks[2][64];
 U64 knight_attacks[64];
 U64 king_attacks[64];
 
+const char* coordinates[]{
+	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
+	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
+	"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+	"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+	"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+	"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+	"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
+};
+
 void print_bitBoard(U64 bitboard)
 {
 	for (int rank = 0; rank < 8; rank++)
@@ -126,6 +137,106 @@ U64 mask_rook_occupancies(int square)
 	return attacks;
 }
 
+U64 generate_bishop_attacks(int square, U64 block)
+{
+	U64 attacks = 0ULL;
+	int rank, file;
+	int t_rank = square / 8;
+	int t_file = square % 8;
+
+	for (rank = t_rank + 1, file = t_file + 1; rank <= 7; rank++, file++)
+	{
+		attacks |= (1ULL << (rank * 8 + file));
+
+		if ((1ULL << (rank * 8 + file)) & block)
+			break;
+	}
+	for (rank = t_rank - 1, file = t_file - 1; rank >= 0; rank--, file--)
+	{
+		attacks |= (1ULL << (rank * 8 + file));
+
+		if ((1ULL << (rank * 8 + file)) & block)
+			break;
+	}
+	for (rank = t_rank + 1, file = t_file - 1; rank <= 7 && file >= 0; rank++, file--)
+	{
+		attacks |= (1ULL << (rank * 8 + file));
+
+		if ((1ULL << (rank * 8 + file)) & block)
+			break;
+	}
+	for (rank = t_rank - 1, file = t_file + 1; rank >= 0 && file <= 7; rank--, file++)
+	{
+		attacks |= (1ULL << (rank * 8 + file));
+
+		if ((1ULL << (rank * 8 + file)) & block)
+			break;
+	}
+
+	return attacks;
+}
+
+U64 generate_rook_attacks(int square, U64 block)
+{
+	U64 attacks = 0ULL;
+	int rank, file;
+	int t_rank = square / 8;
+	int t_file = square % 8;
+
+	for (rank = t_rank + 1; rank <= 7; rank++)
+	{
+		attacks |= (1ULL << (rank * 8 + t_file));
+
+		if ((1ULL << (rank * 8 + t_file)) & block)
+			break;
+	}
+	for (rank = t_rank - 1; rank >= 0; rank--)
+	{
+		attacks |= (1ULL << (rank * 8 + t_file));
+
+		if ((1ULL << (rank * 8 + t_file)) & block)
+			break;
+	}
+	for (file = t_file + 1; file <= 7; file++)
+	{
+		attacks |= (1ULL << (t_rank * 8 + file));
+
+		if ((1ULL << (t_rank * 8 + file)) & block)
+			break;
+	}
+	for (file = t_file - 1; file >= 0; file--)
+	{
+		attacks |= (1ULL << (t_rank * 8 + file));
+		
+		if ((1ULL << (t_rank * 8 + file)) & block)
+			break;
+	}
+
+	return attacks;
+}
+
+static inline int count_bits(U64 board)
+{
+	int count = 0;
+	while (board)
+	{
+		count++;
+		board &= board - 1;
+	}
+	
+	return count;
+}
+
+int get_LS1B_index(U64 board)
+{
+	if (board)
+	{
+		return count_bits((board & -board) - 1);
+	}
+	else
+		return -1;
+}
+
 
 void init_attack_tables()
 {
@@ -145,3 +256,4 @@ void init_attack_tables()
 		king_attacks[square] = mask_king_attacks(square);
 	}
 }
+

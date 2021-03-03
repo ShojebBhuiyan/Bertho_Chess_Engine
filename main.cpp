@@ -12,5 +12,16 @@ int main()
 		//  print_bitBoard(mask_bishop_occupancies(e4));
 		//  print_bitBoard(mask_rook_occupancies(e4));
 	
+	//U64 block = 0ULL;
+
+	//set_bit(block, b6);
+	//set_bit(block, g7);
+	//set_bit(block, e2);
+	//set_bit(block, b2);
+	
+	//std::cout << coordinates[get_LS1B_index(block)];
+
+	//print_bitBoard(generate_rook_attacks(c2, block));
+	//std::cout << count_bits(block);
 	return 0;
 }
