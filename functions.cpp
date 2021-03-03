@@ -7,8 +7,15 @@ void print_bitBoard(U64 bitboard)
 		for (int file = 0; file < 8; file++)
 		{
 			int square = rank * 8 + file;
-			std::cout << square << " ";
+
+			if (!file)
+				std::cout << " " << 8 - rank << "  ";
+
+			std::cout << (get_bit(bitboard, square) ? 1 : 0) << " ";
 		}
 		std::cout << "\n";
 	}
+
+	std::cout << "\n    A B C D E F G H\n";
+	//std::cout << "\nBitboard: " << bitboard;
 }
