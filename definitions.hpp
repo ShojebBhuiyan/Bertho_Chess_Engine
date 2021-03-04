@@ -1,5 +1,5 @@
 #pragma once
-#pragma warning (disable : 4146)
+#pragma warning (disable : 4146) //To bypass a compiler error flag for the get_LS1B_index function
 //Headers
 
 #include <iostream>
@@ -24,7 +24,8 @@ extern U64 pawn_attacks[2][64];
 extern U64 knight_attacks[64];
 extern U64 king_attacks[64];
 extern const char* coordinates[];
-
+extern const int bishop_relevant_bits[64];
+extern const int rook_relevant_bits[64];
 //Enums
 
 enum {
@@ -50,6 +51,7 @@ U64 mask_bishop_occupancies(int square);
 U64 mask_rook_occupancies(int square);
 U64 generate_bishop_attacks(int square, U64 block);
 U64 generate_rook_attacks(int square, U64 block);
-static inline int count_bits(U64 Board);
+int count_bits(U64 Board);
 int get_LS1B_index(U64 board);
+U64 generate_occupancy(int index, int num_bits, U64 attack);
 void init_attack_tables();

@@ -15,6 +15,30 @@ const char* coordinates[]{
 	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
 };
 
+const int bishop_relevant_bits[64] =
+{
+	6, 5, 5, 5, 5, 5, 5, 6,
+	5, 5, 5, 5, 5, 5, 5, 5,
+	5, 5, 7, 7, 7, 7, 5, 5,
+	5, 5, 7, 9, 9, 7, 5, 5,
+	5, 5, 7, 9, 9, 7, 5, 5,
+	5, 5, 7, 7, 7, 7, 5, 5,
+	5, 5, 5, 5, 5, 5, 5, 5,
+	6, 5, 5, 5, 5, 5, 5, 6
+};
+
+const int rook_relevant_bits[64] =
+{
+	12, 11, 11, 11, 11, 11, 11, 12,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	11, 10, 10, 10, 10, 10, 10, 11,
+	12, 11, 11, 11, 11, 11, 11, 12
+};
+
 void print_bitBoard(U64 bitboard)
 {
 	for (int rank = 0; rank < 8; rank++)
@@ -106,9 +130,9 @@ U64 mask_bishop_occupancies(int square)
 	int t_rank = square / 8;
 	int t_file = square % 8;
 
-	for (rank = t_rank + 1, file = t_file + 1; rank <= 6; rank++, file++)
+	for (rank = t_rank + 1, file = t_file + 1; rank <= 6 && file <= 6; rank++, file++)
 		attacks |= (1ULL << (rank * 8 + file));
-	for (rank = t_rank - 1, file = t_file - 1; rank >= 1; rank--, file--)
+	for (rank = t_rank - 1, file = t_file - 1; rank >= 1 && file >= 1; rank--, file--)
 		attacks |= (1ULL << (rank * 8 + file));
 	for (rank = t_rank + 1, file = t_file - 1; rank <= 6 && file >= 1; rank++, file--)
 		attacks |= (1ULL << (rank * 8 + file));
@@ -215,7 +239,7 @@ U64 generate_rook_attacks(int square, U64 block)
 	return attacks;
 }
 
-static inline int count_bits(U64 board)
+int count_bits(U64 board)
 {
 	int count = 0;
 	while (board)
@@ -237,6 +261,21 @@ int get_LS1B_index(U64 board)
 		return -1;
 }
 
+U64 generate_occupancy(int index, int num_bits, U64 attack)
+{
+	U64 occupancy = 0ULL;
+
+	for (int count = 0; count < num_bits; count++)
+	{
+		int square = get_LS1B_index(attack);
+		pop_bit(attack, square);
+
+		if (index & (1 << count))
+			occupancy |= (1ULL << square);
+	}
+	
+	return occupancy;
+}
 
 void init_attack_tables()
 {
