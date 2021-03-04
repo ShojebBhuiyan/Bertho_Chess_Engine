@@ -1,5 +1,6 @@
 #pragma once
 #pragma warning (disable : 4146) //To bypass a compiler error flag for the get_LS1B_index function
+
 //Headers
 
 #include <iostream>
@@ -26,9 +27,14 @@ extern U64 king_attacks[64];
 extern const char* coordinates[];
 extern const int bishop_relevant_bits[64];
 extern const int rook_relevant_bits[64];
+extern unsigned int state;
+extern const U64 bishop_magics[64];
+extern const U64 rook_magics[64];
+
 //Enums
 
-enum {
+enum 
+{
 	a8, b8, c8, d8, e8, f8, g8, h8,
 	a7, b7, c7, d7, e7, f7, g7, h7,
 	a6, b6, c6, d6, e6, f6, g6, h6,
@@ -41,6 +47,8 @@ enum {
 
 enum { White, Black };
 
+enum { Rook, Bishop }; 
+
 //Function prototypes
 
 void print_bitBoard(U64 bitboard);
@@ -51,7 +59,12 @@ U64 mask_bishop_occupancies(int square);
 U64 mask_rook_occupancies(int square);
 U64 generate_bishop_attacks(int square, U64 block);
 U64 generate_rook_attacks(int square, U64 block);
-int count_bits(U64 Board);
-int get_LS1B_index(U64 board);
+static inline int count_bits(U64 Board);
+static inline int get_LS1B_index(U64 board);
 U64 generate_occupancy(int index, int num_bits, U64 attack);
+unsigned int generate_random_u32();
+U64 generate_random_u64();
+U64 generate_candidate();
+U64 generate_magic_number(int square, int relevant_bits, bool bishop);
 void init_attack_tables();
+void init_magic_numbers();

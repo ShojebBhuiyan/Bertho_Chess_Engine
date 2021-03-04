@@ -43,6 +43,20 @@ int main()
 		}
 		std::cout << "\n";
 	}*/
+	/*
+	std::cout << generate_random_u64() << "\n";
+	std::cout << generate_random_u64() << "\n";
+	std::cout << generate_random_u64() << "\n";
+	std::cout << generate_random_u64() << "\n";
+	std::cout << generate_random_u64() << "\n";*/
+	
+	/*print_bitBoard(generate_random_u64());
+	print_bitBoard(generate_random_u64());
+	print_bitBoard(generate_random_u64());
+	print_bitBoard(generate_random_u64());*/
+
+	//init_magic_numbers();
+
 
 	return 0;
 }
