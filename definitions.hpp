@@ -15,9 +15,9 @@
 
 //Macros
 
-#define get_bit(bitboard, square) (bitboard & (1ULL << square))
-#define set_bit(bitboard, square) (bitboard |= (1ULL << square))
-#define pop_bit(bitboard, square) (get_bit(bitboard, square) ? bitboard ^= (1ULL << square) : 0)
+#define get_bit(bitboard, square) ((bitboard) & (1ULL << square))
+#define set_bit(bitboard, square) ((bitboard) |= (1ULL << square))
+#define pop_bit(bitboard, square) ((bitboard) &=  ~(1ULL << square))
 
 //Globals
 
@@ -34,6 +34,7 @@
 //extern U64 rook_masks[64];
 //extern U64 bishop_attacks[64][512];
 //extern U64 rook_attacks[64][4096];
+//extern U64 piece_boards[12];
 
 //Enums
 
@@ -46,12 +47,16 @@ enum
 	a4, b4, c4, d4, e4, f4, g4, h4,
 	a3, b3, c3, d3, e3, f3, g3, h3,
 	a2, b2, c2, d2, e2, f2, g2, h2,
-	a1, b1, c1, d1, e1, f1, g1, h1
+	a1, b1, c1, d1, e1, f1, g1, h1, nil
 };
 
-enum { White, Black };
+enum { White, Black, Both };
 
 enum { Rook, Bishop }; 
+
+enum { wKCast = 1, wQCast = 2, bKCast = 4, bQCast = 8 };
+
+enum { wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK };
 
 //Function prototypes
 
@@ -76,3 +81,5 @@ void init_sliders(bool bishop);
 U64 get_bishop_attacks(int square, U64 occupancy);
 U64 get_rook_attacks(int square, U64 occupancy);
 void init_engine();
+void init_pieces();
+void print_board();

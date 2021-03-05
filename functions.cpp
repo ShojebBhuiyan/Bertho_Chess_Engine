@@ -3,6 +3,17 @@
 U64 pawn_attacks[2][64];
 U64 knight_attacks[64];
 U64 king_attacks[64];
+
+U64 piece_boards[12];
+U64 occupancies[3];
+
+char piece_initials[] = "PNBRQKpnbrqk";
+
+
+bool side = White;
+
+int enpassant = nil;
+
 unsigned int state = 1804289383; //Placeholder pseudo random number generated beforehand using rand()
 
 //struct BlackMagic
@@ -112,7 +123,7 @@ const U64 bishop_magics[64] =
 	0x28000010020204ULL,
 	0x6000020202d0240ULL,
 	0x8918844842082200ULL,
-	0x4010011029020020ULL,
+	0x4010011029020020ULL
 };
 
 const int rook_relevant_bits[64] =
@@ -192,7 +203,7 @@ const U64 rook_magics[64] =
 	0x20030a0244872ULL,
 	0x12001008414402ULL,
 	0x2006104900a0804ULL,
-	0x1004081002402ULL,
+	0x1004081002402ULL
 };
 
 
@@ -623,6 +634,7 @@ U64 get_bishop_attacks(int square, U64 occupancy)
 
 	return bishop_attacks[square][occupancy];
 }
+
 U64 get_rook_attacks(int square, U64 occupancy)
 {
 	//Reference: https://www.chessprogramming.org/Magic_Bitboards#Plain
@@ -633,10 +645,112 @@ U64 get_rook_attacks(int square, U64 occupancy)
 	return rook_attacks[square][occupancy];
 }
 
+void init_pieces()
+{
+	//White Pawns
+	
+	for (int index = a2; index <= h2; index++)
+		set_bit(piece_boards[wP], index);
+	
+	//Black Pawns
+
+	for (int index = a7; index <= h7; index++)
+		set_bit(piece_boards[bP], index);
+
+	//White Knights
+		
+	set_bit(piece_boards[wN], b1);
+	set_bit(piece_boards[wN], g1);
+
+	//Black Knights
+
+	set_bit(piece_boards[bN], b8);
+	set_bit(piece_boards[bN], g8);
+
+	//White Bishops
+
+	set_bit(piece_boards[wB], c1);
+	set_bit(piece_boards[wB], f1);
+
+	//Black Bishops
+
+	set_bit(piece_boards[bB], c8);
+	set_bit(piece_boards[bB], f8);
+
+	//White Rooks
+
+	set_bit(piece_boards[wR], a1);
+	set_bit(piece_boards[wR], h1);
+
+	//Black Rooks
+
+	set_bit(piece_boards[bR], a8);
+	set_bit(piece_boards[bR], h8);
+
+	//White Queen
+
+	set_bit(piece_boards[wQ], d1);
+
+	//Black Queen 
+
+	set_bit(piece_boards[bQ], d8);
+
+	//White King
+
+	set_bit(piece_boards[wK], e1);
+
+	//Black King 
+
+	set_bit(piece_boards[bK], e8);
+}
+
 void init_engine()
 {
 	init_attack_tables();
 	//init_magic_numbers();
 	init_sliders(Bishop);
 	init_sliders(Rook);
+	init_pieces();
+	print_board();
+}
+
+void print_board()
+{
+	std::cout << "\n";
+
+	for (int rank = 0; rank < 8; rank++)
+	{
+		for (int file = 0; file < 8; file++)
+		{
+			int square = rank * 8 + file;
+
+			if(!file)
+				std::cout << " " << 8 - rank << "  ";
+			
+			int piece = -1;
+
+			for (int bit = wP; bit <= bK; bit++)
+			{
+				if (get_bit(piece_boards[bit], square))
+					piece = bit;
+			}
+			
+			
+			//std::cout << " " << (piece == -1) ? '.' : (char) piece_initials[piece];
+			printf(" %c", (piece == -1) ? '.' : piece_initials[piece]);
+
+		}
+
+		std::cout << "\n";
+	}
+
+	std::cout << "\n     A B C D E F G H\n";
+
+	printf("\n  Side: %s", (!side) ? "White to move\n" : "Black to move\n");
+
+	//std::cout << "\nSide: " << (!side) ? "White to move\n" : "Black to move\n";
+
+	printf("\n  Enpassant: %s",  (enpassant != nil) ? coordinates[enpassant] : "Not eligible\n");
+	
+	//std::cout << "\nEnpassant: " << (enpassant != nil) ? coordinates[enpassant] : "Not eligible";
 }
