@@ -21,15 +21,19 @@
 
 //Globals
 
-extern U64 pawn_attacks[2][64];
-extern U64 knight_attacks[64];
-extern U64 king_attacks[64];
-extern const char* coordinates[];
-extern const int bishop_relevant_bits[64];
-extern const int rook_relevant_bits[64];
-extern unsigned int state;
-extern const U64 bishop_magics[64];
-extern const U64 rook_magics[64];
+//extern U64 pawn_attacks[2][64];
+//extern U64 knight_attacks[64];
+//extern U64 king_attacks[64];
+//extern const char* coordinates[];
+//extern const int bishop_relevant_bits[64];
+//extern const int rook_relevant_bits[64];
+//extern unsigned int state;
+//extern const U64 bishop_magics[64];
+//extern const U64 rook_magics[64];
+//extern U64 bishop_masks[64];
+//extern U64 rook_masks[64];
+//extern U64 bishop_attacks[64][512];
+//extern U64 rook_attacks[64][4096];
 
 //Enums
 
@@ -68,3 +72,7 @@ U64 generate_candidate();
 U64 generate_magic_number(int square, int relevant_bits, bool bishop);
 void init_attack_tables();
 void init_magic_numbers();
+void init_sliders(bool bishop);
+U64 get_bishop_attacks(int square, U64 occupancy);
+U64 get_rook_attacks(int square, U64 occupancy);
+void init_engine();

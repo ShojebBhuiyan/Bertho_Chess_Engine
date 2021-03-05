@@ -5,6 +5,24 @@ U64 knight_attacks[64];
 U64 king_attacks[64];
 unsigned int state = 1804289383; //Placeholder pseudo random number generated beforehand using rand()
 
+//struct BlackMagic
+//{
+//	U64* ptr;
+//	U64 notmask;
+//	U64 blackmagic;
+//};
+//
+//BlackMagic mask_bishop[64];
+//BlackMagic mask_rook[64];
+//
+//U64 slider_attack[88316];
+
+U64 bishop_masks[64];
+U64 rook_masks[64];
+
+U64 bishop_attacks[64][512];
+U64 rook_attacks[64][4096];
+
 const char* coordinates[]
 {
 	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
@@ -418,7 +436,7 @@ U64 generate_occupancy(int index, int num_bits, U64 attack)
 
 unsigned int generate_random_u32()
 {
-	unsigned int number = state; //Random place holder value
+	unsigned int number = state; //Random placeholder value
 
 	//XORshift32 algorithm
 
@@ -450,6 +468,8 @@ U64 generate_candidate()
 
 U64 generate_magic_number(int square, int relevant_bits, bool bishop)
 {
+	//Reference: https://www.chessprogramming.org/Looking_for_Magics
+
 	U64 occupancies[4096]; //max limit of rook and bishop occupancies
 	U64 attacks[4096];
 	U64 used_attacks[4096];
@@ -557,3 +577,66 @@ void init_attack_tables()
 	}
 }
 
+void init_sliders(bool bishop)
+{
+	for (int square = 0; square < 64; square++)
+	{
+		bishop_masks[square] = mask_bishop_occupancies(square);
+		rook_masks[square] = mask_rook_occupancies(square);
+
+		U64 attack_mask = bishop ? bishop_masks[square] : rook_masks[square];
+
+		int relevant_bits = count_bits(attack_mask); 
+
+		int occupancy_indices = (1 << relevant_bits);
+
+		for (int index = 0; index < occupancy_indices; index++)
+		{
+			if (bishop)
+			{ 
+				U64 occupancy = generate_occupancy(index, relevant_bits, attack_mask);
+
+				int magic_index = (int)((occupancy * bishop_magics[square]) >> (64 - bishop_relevant_bits[square]));
+
+				bishop_attacks[square][magic_index] = generate_bishop_attacks(square, occupancy);
+			}
+
+			else //Rook
+			{
+				U64 occupancy = generate_occupancy(index, relevant_bits, attack_mask);
+
+				int magic_index = (int)((occupancy * rook_magics[square]) >> (64 - rook_relevant_bits[square]));
+
+				rook_attacks[square][magic_index] = generate_rook_attacks(square, occupancy);
+			}
+		}
+	}
+}
+
+U64 get_bishop_attacks(int square, U64 occupancy)
+{
+	//Reference: https://www.chessprogramming.org/Magic_Bitboards#Plain
+
+	occupancy &= bishop_masks[square];
+	occupancy *= bishop_magics[square];
+	occupancy >>= (U64)(64 - bishop_relevant_bits[square]);
+
+	return bishop_attacks[square][occupancy];
+}
+U64 get_rook_attacks(int square, U64 occupancy)
+{
+	//Reference: https://www.chessprogramming.org/Magic_Bitboards#Plain
+	occupancy &= rook_masks[square];
+	occupancy *= rook_magics[square];
+	occupancy >>= (U64)(64 - rook_relevant_bits[square]);
+
+	return rook_attacks[square][occupancy];
+}
+
+void init_engine()
+{
+	init_attack_tables();
+	//init_magic_numbers();
+	init_sliders(Bishop);
+	init_sliders(Rook);
+}
