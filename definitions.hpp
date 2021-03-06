@@ -80,6 +80,7 @@ void init_magic_numbers();
 void init_sliders(bool bishop);
 U64 get_bishop_attacks(int square, U64 occupancy);
 U64 get_rook_attacks(int square, U64 occupancy);
+U64 get_queen_attacks(int square, U64 occupancy);
 void init_engine();
 void init_pieces();
 void print_board();

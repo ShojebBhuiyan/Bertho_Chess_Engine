@@ -645,6 +645,25 @@ U64 get_rook_attacks(int square, U64 occupancy)
 	return rook_attacks[square][occupancy];
 }
 
+U64 get_queen_attacks(int square, U64 occupancy)
+{
+	U64 result = 0ULL;
+	U64 bishop_occupancy = occupancy;
+	U64 rook_occupancy = occupancy;
+
+	bishop_occupancy &= bishop_masks[square];
+	bishop_occupancy *= bishop_magics[square];
+	bishop_occupancy >>= (64 - bishop_relevant_bits[square]);
+
+	rook_occupancy &= rook_masks[square];
+	rook_occupancy *= rook_magics[square];
+	rook_occupancy >>= (64 - rook_relevant_bits[square]);
+
+	result = bishop_attacks[square][bishop_occupancy] | rook_attacks[square][rook_occupancy];
+
+	return result;
+}
+
 void init_pieces()
 {
 	//White Pawns
@@ -754,3 +773,4 @@ void print_board()
 	
 	//std::cout << "\nEnpassant: " << (enpassant != nil) ? coordinates[enpassant] : "Not eligible";
 }
+

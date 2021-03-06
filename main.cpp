@@ -10,6 +10,6 @@ int main()
 	//print_board();
 
 	init_engine();
-
+	
 	return 0;
 }
