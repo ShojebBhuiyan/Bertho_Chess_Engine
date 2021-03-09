@@ -9,10 +9,29 @@ U64 occupancies[3];
 
 char piece_initials[] = "PNBRQKpnbrqk";
 
+//std::map <char, int> piece_initials;
+//
+//void map_pieces()
+//{
+//	piece_initials.insert({ 'P', wP });
+//	piece_initials.insert({ 'N', wN });
+//	piece_initials.insert({ 'B', wB });
+//	piece_initials.insert({ 'R', wR });
+//	piece_initials.insert({ 'Q', wQ });
+//	piece_initials.insert({ 'K', wK });
+//	piece_initials.insert({ 'p', bP });
+//	piece_initials.insert({ 'n', bN });
+//	piece_initials.insert({ 'b', bB });
+//	piece_initials.insert({ 'r', bR });
+//	piece_initials.insert({ 'q', bQ });
+//	piece_initials.insert({ 'k', bK });
+//}
 
 bool side = White;
 
 int enpassant = nil;
+
+int castle;
 
 unsigned int state = 1804289383; //Placeholder pseudo random number generated beforehand using rand()
 
@@ -774,3 +793,117 @@ void print_board()
 	//std::cout << "\nEnpassant: " << (enpassant != nil) ? coordinates[enpassant] : "Not eligible";
 }
 
+void parse_FEN(char* fen)
+{
+	memset(piece_boards, 0ULL, sizeof(piece_boards));
+
+	memset(occupancies, 0ULL, sizeof(occupancies));
+
+	side = White;
+	enpassant = nil;
+	castle = 0;
+
+	for (int rank = 0; rank < 8; rank++)
+	{
+		for (int file = 0; file < 8; file++)
+		{
+			int square = rank * 8 + file;
+
+			if ((*fen >= 'A' && *fen <= 'z') || (*fen >= 'a' && 'fen' <= 'z'))
+			{
+			
+				int piece;
+
+				switch (*fen)
+				{
+					case 'P': piece = 0; break;
+					case 'N': piece = 1; break;
+					case 'B': piece = 2; break;
+					case 'R': piece = 3; break;
+					case 'Q': piece = 4; break;
+					case 'K': piece = 5; break;
+					case 'p': piece = 6; break;
+					case 'n': piece = 7; break;
+					case 'b': piece = 8; break;
+					case 'r': piece = 9; break;
+					case 'q': piece = 10; break;
+					case 'k': piece = 11; break;
+				}
+
+				set_bit(piece_boards[piece], square);
+				
+				fen++;
+			}
+
+			if (*fen >= '0' && *fen <= '9')
+			{
+				//std::cout << "FEN: " << *fen << "\n";
+
+				int move = (*fen++) - '0';
+
+				int piece = -1;
+
+				for (int bit = wP; bit <= bK; bit++)
+				{
+					if (get_bit(piece_boards[bit], square))
+						piece = bit;
+				}
+
+				if (piece == -1)
+					file--;
+
+				file += move;
+			}
+		
+			if (*fen == '/')
+				fen++;
+		}
+	}
+
+	fen++; //To go to side to move
+
+	((*fen++) == 'w') ? (side = White) : (side = Black);
+
+	fen += 2; //To go to castling rights
+
+	while (*fen != ' ')
+	{
+		switch (*fen)
+		{
+			case 'K': castle |= wK; break;
+			case 'Q': castle |= wQ; break;
+			case 'k': castle |= bK; break;
+			case 'q': castle |= bQ; break;
+			case '-': break;
+		}
+		
+		fen++;
+	}
+
+	fen++; //To go to enpassant eligibility
+	
+	if (*fen != '-')
+	{
+		int file = fen[0] - 'a';
+		int rank = 8 - (fen[1] - '0');
+
+		enpassant = rank * 8 + file;
+	}
+	else
+		enpassant = nil;
+
+	//Update White occupancies
+
+	for (int piece = wP; piece <= wK; piece++)
+		occupancies[White] |= piece_boards[piece];
+		
+	//Update Black occupancies
+
+	for (int piece = bP; piece <= bK; piece++)
+		occupancies[Black] |= piece_boards[piece];
+		
+	//Update all occupancies
+
+	occupancies[Both] |= occupancies[White];
+	occupancies[Both] |= occupancies[Black];
+}

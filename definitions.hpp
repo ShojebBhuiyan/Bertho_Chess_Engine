@@ -4,6 +4,7 @@
 //Headers
 
 #include <iostream>
+//#include <map>
 
 //Definitions
 
@@ -12,6 +13,7 @@
 #define not_H_file 9187201950435737471ULL
 #define not_HG_file 4557430888798830399ULL
 #define not_AB_file 18229723555195321596ULL
+#define start_position "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 //Macros
 
@@ -58,6 +60,8 @@ enum { wKCast = 1, wQCast = 2, bKCast = 4, bQCast = 8 };
 
 enum { wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK };
 
+//enum { 'P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k' };
+
 //Function prototypes
 
 void print_bitBoard(U64 bitboard);
@@ -84,3 +88,5 @@ U64 get_queen_attacks(int square, U64 occupancy);
 void init_engine();
 void init_pieces();
 void print_board();
+void parse_FEN(char* fen);
+//void map_pieces();

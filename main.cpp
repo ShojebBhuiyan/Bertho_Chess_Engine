@@ -9,7 +9,16 @@ int main()
 
 	//print_board();
 
-	init_engine();
+	//init_engine();
 	
+	//map_pieces();
+	//init_pieces();
+	
+	char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+	parse_FEN(fen);
+
+	print_board();
+
 	return 0;
 }
