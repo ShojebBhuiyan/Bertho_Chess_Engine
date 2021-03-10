@@ -467,14 +467,14 @@ U64 generate_bishop_attacks(int square, U64 block)
 	int t_rank = square / 8;
 	int t_file = square % 8;
 
-	for (rank = t_rank + 1, file = t_file + 1; rank <= 7; rank++, file++)
+	for (rank = t_rank + 1, file = t_file + 1; rank <= 7 && file <= 7; rank++, file++)
 	{
 		attacks |= (1ULL << (rank * 8 + file));
 
 		if ((1ULL << (rank * 8 + file)) & block)
 			break;
 	}
-	for (rank = t_rank - 1, file = t_file - 1; rank >= 0; rank--, file--)
+	for (rank = t_rank - 1, file = t_file - 1; rank >= 0 && file >= 0; rank--, file--)
 	{
 		attacks |= (1ULL << (rank * 8 + file));
 
@@ -544,7 +544,7 @@ U64 get_bishop_attacks(int square, U64 occupancy)
 
 	occupancy &= bishop_masks[square];
 	occupancy *= bishop_magics[square];
-	occupancy >>= (U64)(64 - bishop_relevant_bits[square]);
+	occupancy >>= ((U64)64 - (U64)bishop_relevant_bits[square]);
 
 	return bishop_attacks[square][occupancy];
 }
@@ -554,7 +554,7 @@ U64 get_rook_attacks(int square, U64 occupancy)
 	//Reference: https://www.chessprogramming.org/Magic_Bitboards#Plain
 	occupancy &= rook_masks[square];
 	occupancy *= rook_magics[square];
-	occupancy >>= (U64)(64 - rook_relevant_bits[square]);
+	occupancy >>= ((U64)64 - (U64)rook_relevant_bits[square]);
 
 	return rook_attacks[square][occupancy];
 }
@@ -567,11 +567,11 @@ U64 get_queen_attacks(int square, U64 occupancy)
 
 	bishop_occupancy &= bishop_masks[square];
 	bishop_occupancy *= bishop_magics[square];
-	bishop_occupancy >>= (64 - bishop_relevant_bits[square]);
+	bishop_occupancy >>= ((U64)64 - (U64)bishop_relevant_bits[square]);
 
 	rook_occupancy &= rook_masks[square];
 	rook_occupancy *= rook_magics[square];
-	rook_occupancy >>= (64 - rook_relevant_bits[square]);
+	rook_occupancy >>= ((U64)64 - (U64)rook_relevant_bits[square]);
 
 	result = bishop_attacks[square][bishop_occupancy] | rook_attacks[square][rook_occupancy];
 
@@ -794,7 +794,7 @@ void init_sliders(bool bishop)
 				U64 occupancy = generate_occupancy(index, relevant_bits, attack_mask);
 
 				int magic_index = (int)((occupancy * rook_magics[square]) >> (64 - rook_relevant_bits[square]));
-
+		
 				rook_attacks[square][magic_index] = generate_rook_attacks(square, occupancy);
 			}
 		}

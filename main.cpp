@@ -5,15 +5,33 @@ int main()
 	
 	init_engine();
 	
-	char fen[] = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1"; //Testing FEN
+	//U64 occupancy = 0ULL;
+
+	//set_bit(occupancy, c5);
+	//set_bit(occupancy, f2);
+	//set_bit(occupancy, g7);
+	//set_bit(occupancy, b2);
+	//set_bit(occupancy, g5);
+	//set_bit(occupancy, e2);
+	//set_bit(occupancy, e7);
+	
+	//print_bitBoard(get_bishop_attacks(a1, occupancy));
+
+	//print_bitBoard(generate_bishop_attacks(a1, occupancy));
+
+	char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; //Testing FEN
+
+	
 
 	parse_FEN(fen);
 
 	print_board();
 
-	print_attacks(White);
+	//print_attacks(White);
 
-	print_attacks(Black);
+	//print_attacks(Black);
 
+	
+	
 	return 0;
 }
