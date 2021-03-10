@@ -225,6 +225,7 @@ const U64 rook_magics[64] =
 	0x1004081002402ULL
 };
 
+// Print functions
 
 void print_bitBoard(U64 bitboard)
 {
@@ -244,6 +245,117 @@ void print_bitBoard(U64 bitboard)
 
 	std::cout << "\n    A B C D E F G H\n";
 	std::cout << "\nBitboard ID: " << bitboard << "\n";
+}
+
+void print_board()
+{
+	std::cout << "\n";
+
+	for (int rank = 0; rank < 8; rank++)
+	{
+		for (int file = 0; file < 8; file++)
+		{
+			int square = rank * 8 + file;
+
+			if (!file)
+				std::cout << " " << 8 - rank << "  ";
+
+			int piece = -1;
+
+			for (int bit = wP; bit <= bK; bit++)
+			{
+				if (get_bit(piece_boards[bit], square))
+					piece = bit;
+			}
+
+
+			//std::cout << " " << (piece == -1) ? '.' : (char) piece_initials[piece];
+			printf(" %c", (piece == -1) ? '.' : piece_initials[piece]);
+
+		}
+
+		std::cout << "\n";
+	}
+
+	std::cout << "\n     A B C D E F G H\n";
+
+	printf("\n  Side: %s", (!side) ? "White to move\n" : "Black to move\n");
+
+	//std::cout << "\nSide: " << (!side) ? "White to move\n" : "Black to move\n";
+
+	printf("\n  Enpassant: %s", (enpassant != nil) ? coordinates[enpassant] : "Not eligible\n");
+
+	//std::cout << "\nEnpassant: " << (enpassant != nil) ? coordinates[enpassant] : "Not eligible";
+
+	printf("\n\n  Castling:  %c%c%c%c\n\n", (castle & wK) ? 'K' : '-',
+		(castle & wQ) ? 'Q' : '-',
+		(castle & bK) ? 'k' : '-',
+		(castle & bQ) ? 'q' : '-');
+}
+
+void print_attacks(int side)
+{
+	std::cout << "\n";
+
+	for (int rank = 0; rank < 8; rank++)
+	{
+		for (int file = 0; file < 8; file++)
+		{
+			int square = rank * 8 + file;
+
+			if (!file)
+				std::cout << " " << 8 - rank << "  ";
+
+			printf(" %d", is_attacked(side, square) ? 1 : 0);
+		}
+
+		std::cout << "\n";
+	}
+
+	std::cout << "\n     A B C D E F G H\n";
+}
+
+
+// Attack functions
+
+bool is_attacked(int side, int square)
+{
+	// By White Pawns
+	
+	if (side == White && (pawn_attacks[Black][square] & piece_boards[wP]))
+		return true;
+
+	// By Black Pawns
+	
+	if (side == Black && (pawn_attacks[White][square] & piece_boards[bP]))
+		return true;
+
+	// By Knights
+
+	if (knight_attacks[square] & ((side == White) ? piece_boards[wN] : piece_boards[bN]))
+		return true;
+
+	// By Bishops
+	
+	if (get_bishop_attacks(square, occupancies[Both]) & ((side == White) ? piece_boards[wB] : piece_boards[bB]))
+		return true;
+
+	// By Rooks
+
+	if (get_rook_attacks(square, occupancies[Both]) & ((side == White) ? piece_boards[wR] : piece_boards[bR]))
+		return true;
+
+	// By Queens
+
+	if (get_queen_attacks(square, occupancies[Both]) & ((side == White) ? piece_boards[wQ] : piece_boards[bQ]))
+		return true;
+	
+	// By Kings
+
+	if (king_attacks[square] & ((side == White) ? piece_boards[wK] : piece_boards[bK]))
+		return true;
+	
+	return false;
 }
 
 U64 mask_pawn_attacks(int side, int square)
@@ -426,6 +538,48 @@ U64 generate_rook_attacks(int square, U64 block)
 	return attacks;
 }
 
+U64 get_bishop_attacks(int square, U64 occupancy)
+{
+	//Reference: https://www.chessprogramming.org/Magic_Bitboards#Plain
+
+	occupancy &= bishop_masks[square];
+	occupancy *= bishop_magics[square];
+	occupancy >>= (U64)(64 - bishop_relevant_bits[square]);
+
+	return bishop_attacks[square][occupancy];
+}
+
+U64 get_rook_attacks(int square, U64 occupancy)
+{
+	//Reference: https://www.chessprogramming.org/Magic_Bitboards#Plain
+	occupancy &= rook_masks[square];
+	occupancy *= rook_magics[square];
+	occupancy >>= (U64)(64 - rook_relevant_bits[square]);
+
+	return rook_attacks[square][occupancy];
+}
+
+U64 get_queen_attacks(int square, U64 occupancy)
+{
+	U64 result = 0ULL;
+	U64 bishop_occupancy = occupancy;
+	U64 rook_occupancy = occupancy;
+
+	bishop_occupancy &= bishop_masks[square];
+	bishop_occupancy *= bishop_magics[square];
+	bishop_occupancy >>= (64 - bishop_relevant_bits[square]);
+
+	rook_occupancy &= rook_masks[square];
+	rook_occupancy *= rook_magics[square];
+	rook_occupancy >>= (64 - rook_relevant_bits[square]);
+
+	result = bishop_attacks[square][bishop_occupancy] | rook_attacks[square][rook_occupancy];
+
+	return result;
+}
+
+// Bit manipulation functions
+
 static inline int count_bits(U64 board)
 {
 	int count = 0;
@@ -490,6 +644,8 @@ U64 generate_random_u64()
 
 	return a | (b << 16) | (c << 32) | (d << 48);
 }
+
+// Magic number functions
 
 U64 generate_candidate()
 {
@@ -576,6 +732,8 @@ U64 generate_magic_number(int square, int relevant_bits, bool bishop)
 	return 0ULL;
 }
 
+// Initializers
+
 void init_magic_numbers()
 {
 	for (int square = 0; square < 64; square++)
@@ -643,45 +801,7 @@ void init_sliders(bool bishop)
 	}
 }
 
-U64 get_bishop_attacks(int square, U64 occupancy)
-{
-	//Reference: https://www.chessprogramming.org/Magic_Bitboards#Plain
 
-	occupancy &= bishop_masks[square];
-	occupancy *= bishop_magics[square];
-	occupancy >>= (U64)(64 - bishop_relevant_bits[square]);
-
-	return bishop_attacks[square][occupancy];
-}
-
-U64 get_rook_attacks(int square, U64 occupancy)
-{
-	//Reference: https://www.chessprogramming.org/Magic_Bitboards#Plain
-	occupancy &= rook_masks[square];
-	occupancy *= rook_magics[square];
-	occupancy >>= (U64)(64 - rook_relevant_bits[square]);
-
-	return rook_attacks[square][occupancy];
-}
-
-U64 get_queen_attacks(int square, U64 occupancy)
-{
-	U64 result = 0ULL;
-	U64 bishop_occupancy = occupancy;
-	U64 rook_occupancy = occupancy;
-
-	bishop_occupancy &= bishop_masks[square];
-	bishop_occupancy *= bishop_magics[square];
-	bishop_occupancy >>= (64 - bishop_relevant_bits[square]);
-
-	rook_occupancy &= rook_masks[square];
-	rook_occupancy *= rook_magics[square];
-	rook_occupancy >>= (64 - rook_relevant_bits[square]);
-
-	result = bishop_attacks[square][bishop_occupancy] | rook_attacks[square][rook_occupancy];
-
-	return result;
-}
 
 void init_pieces()
 {
@@ -748,50 +868,11 @@ void init_engine()
 	//init_magic_numbers();
 	init_sliders(Bishop);
 	init_sliders(Rook);
-	init_pieces();
-	print_board();
+	//init_pieces();
+	//print_board();
 }
 
-void print_board()
-{
-	std::cout << "\n";
-
-	for (int rank = 0; rank < 8; rank++)
-	{
-		for (int file = 0; file < 8; file++)
-		{
-			int square = rank * 8 + file;
-
-			if(!file)
-				std::cout << " " << 8 - rank << "  ";
-			
-			int piece = -1;
-
-			for (int bit = wP; bit <= bK; bit++)
-			{
-				if (get_bit(piece_boards[bit], square))
-					piece = bit;
-			}
-			
-			
-			//std::cout << " " << (piece == -1) ? '.' : (char) piece_initials[piece];
-			printf(" %c", (piece == -1) ? '.' : piece_initials[piece]);
-
-		}
-
-		std::cout << "\n";
-	}
-
-	std::cout << "\n     A B C D E F G H\n";
-
-	printf("\n  Side: %s", (!side) ? "White to move\n" : "Black to move\n");
-
-	//std::cout << "\nSide: " << (!side) ? "White to move\n" : "Black to move\n";
-
-	printf("\n  Enpassant: %s",  (enpassant != nil) ? coordinates[enpassant] : "Not eligible\n");
-	
-	//std::cout << "\nEnpassant: " << (enpassant != nil) ? coordinates[enpassant] : "Not eligible";
-}
+// Parsers
 
 void parse_FEN(char* fen)
 {

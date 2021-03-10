@@ -2,23 +2,18 @@
 
 int main()
 {
-	//init_pieces();
-
-	///*print_bitBoard(piece_boards[bP] | piece_boards[wP] | piece_boards[wN] | piece_boards[bN] | piece_boards[wB] | piece_boards[bB] | piece_boards[wR] | piece_boards[bR] | piece_boards[wQ] | piece_boards[bQ]
-	//	| piece_boards[wK] | piece_boards[bK]);*/
-
-	//print_board();
-
-	//init_engine();
 	
-	//map_pieces();
-	//init_pieces();
+	init_engine();
 	
-	char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	char fen[] = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1"; //Testing FEN
 
 	parse_FEN(fen);
 
 	print_board();
+
+	print_attacks(White);
+
+	print_attacks(Black);
 
 	return 0;
 }
