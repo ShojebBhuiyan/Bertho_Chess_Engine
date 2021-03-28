@@ -21,11 +21,14 @@ int main()
 
 	char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; //Testing FEN
 
+
 	
 
 	parse_FEN(fen);
 
 	print_board();
+
+	generate_moves();
 
 	//print_attacks(White);
 

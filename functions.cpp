@@ -988,3 +988,115 @@ void parse_FEN(char* fen)
 	occupancies[Both] |= occupancies[White];
 	occupancies[Both] |= occupancies[Black];
 }
+
+// Move Generator
+
+void generate_moves()
+{
+	int source, target;
+	
+	U64 bitboard, attacks;
+
+	for (int piece = wP; piece <= bK; piece++)
+	{
+		bitboard = piece_boards[piece];
+		
+		// White pawn movements and white king castling moves
+
+		if (side == White)
+		{
+			if (piece == wP)
+			{
+				while (bitboard)
+				{
+					source = get_LS1B_index(bitboard);
+					
+					target = source - 8;
+
+					pop_bit(bitboard, source);
+
+					// Quite moves
+
+					if (!(target < a8) && !get_bit(occupancies[Both], target))
+					{
+						// Pawn Promotion
+						
+						if (source >= a7 && source <= h7)
+						{
+							printf("Pawn promotion: %s%sQ\n", coordinates[source], coordinates[target]);
+							printf("Pawn promotion: %s%sR\n", coordinates[source], coordinates[target]);
+							printf("Pawn promotion: %s%sB\n", coordinates[source], coordinates[target]);
+							printf("Pawn promotion: %s%sN\n", coordinates[source], coordinates[target]);
+						}
+
+						else
+						{
+							// One square
+
+							printf("Pawn push: %s%s\n", coordinates[source], coordinates[target]);
+
+							// Two squares
+
+							if ((source >= a2 && source <= h2) && !get_bit(occupancies[Both], target - 8))
+								printf("Double pawn move: %s%s\n", coordinates[source], coordinates[target - 8]);
+						}
+					}
+				}
+			}
+		}
+		
+		//Black pawn movements and black king castling moves
+
+		else
+		{
+			if (piece == bP)
+			{
+				while (bitboard)
+				{
+					source = get_LS1B_index(bitboard);
+
+					target = source + 8;
+
+					pop_bit(bitboard, source);
+
+					// Quite moves
+
+					if (!(target > h1) && !get_bit(occupancies[Both], target))
+					{
+						// Pawn Promotion
+
+						if (source >= a2 && source <= h2)
+						{
+							printf("Pawn promotion: %s%sQ\n", coordinates[source], coordinates[target]);
+							printf("Pawn promotion: %s%sR\n", coordinates[source], coordinates[target]);
+							printf("Pawn promotion: %s%sB\n", coordinates[source], coordinates[target]);
+							printf("Pawn promotion: %s%sN\n", coordinates[source], coordinates[target]);
+						}
+
+						else
+						{
+							// One square
+
+							printf("Pawn push: %s%s\n", coordinates[source], coordinates[target]);
+
+							// Two squares
+
+							if ((source >= a7 && source <= h7) && !get_bit(occupancies[Both], target + 8))
+								printf("Double pawn move: %s%s\n", coordinates[source], coordinates[target + 8]);
+						}
+					}
+				}
+			}
+		}
+
+		// Knight moves
+
+		// Bishop moves
+
+		// Rook moves
+
+		// Queen moves
+
+		// King moves
+	}
+}

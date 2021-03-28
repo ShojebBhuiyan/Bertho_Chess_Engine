@@ -92,3 +92,4 @@ void parse_FEN(char* fen);
 //void map_pieces();
 void print_attacks(int side);
 bool is_attacked(int side, int square);
+void generate_moves();
