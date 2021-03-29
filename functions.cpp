@@ -1013,8 +1013,6 @@ void generate_moves()
 					
 					target = source - 8;
 
-					pop_bit(bitboard, source);
-
 					// Quite moves
 
 					if (!(target < a8) && !get_bit(occupancies[Both], target))
@@ -1041,10 +1039,47 @@ void generate_moves()
 								printf("Double pawn move: %s%s\n", coordinates[source], coordinates[target - 8]);
 						}
 					}
+
+					// Capture moves
+
+					attacks = pawn_attacks[White][source] & occupancies[Black];
+
+					while (attacks)
+					{
+						target = get_LS1B_index(attacks);
+					
+						// Capturing and Promoting
+						if (source >= a7 && source <= h7)
+						{
+							printf("Pawn capture and promote: %s%sQ\n", coordinates[source], coordinates[target]);
+							printf("Pawn capture and promote: %s%sR\n", coordinates[source], coordinates[target]);
+							printf("Pawn capture and promote: %s%sB\n", coordinates[source], coordinates[target]);
+							printf("Pawn capture and promote: %s%sN\n", coordinates[source], coordinates[target]);
+						}
+
+						else
+							printf("Pawn capture : %s%s\n", coordinates[source], coordinates[target]);
+
+						pop_bit(attacks, target);
+					}
+
+					// Enpassant captures
+
+					if (enpassant != nil)
+					{
+						attacks = pawn_attacks[White][source] & (1ULL << enpassant);
+
+						if (attacks)
+						{
+							target = get_LS1B_index(attacks);
+							
+							printf("Enpassant capture: %s%s\n", coordinates[source], coordinates[target]);
+						}
+					}
+					pop_bit(bitboard, source);
 				}
 			}
 		}
-		
 		//Black pawn movements and black king castling moves
 
 		else
@@ -1055,9 +1090,9 @@ void generate_moves()
 				{
 					source = get_LS1B_index(bitboard);
 
-					target = source + 8;
+					//print_bitBoard(bitboard);
 
-					pop_bit(bitboard, source);
+					target = source + 8;
 
 					// Quite moves
 
@@ -1084,7 +1119,48 @@ void generate_moves()
 							if ((source >= a7 && source <= h7) && !get_bit(occupancies[Both], target + 8))
 								printf("Double pawn move: %s%s\n", coordinates[source], coordinates[target + 8]);
 						}
+
+						//Capture moves
+						//printf("Coordinate: %s\n", coordinates[source]);
+						//print_bitBoard(bitboard);
+						attacks = pawn_attacks[Black][source] & occupancies[White];
+
+						//print_bitBoard(attacks);
+
+						while (attacks)
+						{
+							target = get_LS1B_index(attacks);
+
+							// Capturing and Promoting
+							if (source >= a2 && source <= h2)
+							{
+								printf("Pawn capture and promote: %s%sQ\n", coordinates[source], coordinates[target]);
+								printf("Pawn capture and promote: %s%sR\n", coordinates[source], coordinates[target]);
+								printf("Pawn capture and promote: %s%sB\n", coordinates[source], coordinates[target]);
+								printf("Pawn capture and promote: %s%sN\n", coordinates[source], coordinates[target]);
+							}
+
+							else
+								printf("Pawn capture : %s%s\n", coordinates[source], coordinates[target]);
+
+							pop_bit(attacks, target);
+						}
+
+						// Enpassant captures
+
+						if (enpassant != nil)
+						{
+							attacks = pawn_attacks[Black][source] & (1ULL << enpassant);
+
+							if (attacks)
+							{
+								target = get_LS1B_index(attacks);
+
+								printf("Enpassant capture: %s%s\n", coordinates[source], coordinates[target]);
+							}
+						}
 					}
+					pop_bit(bitboard, source);
 				}
 			}
 		}

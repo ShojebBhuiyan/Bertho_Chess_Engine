@@ -37,6 +37,7 @@ extern U64 rook_masks[64];
 extern U64 bishop_attacks[64][512];
 extern U64 rook_attacks[64][4096];
 extern U64 piece_boards[12];
+extern U64 occupancies[3];
 
 //Enums
 

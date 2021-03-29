@@ -19,7 +19,7 @@ int main()
 
 	//print_bitBoard(generate_bishop_attacks(a1, occupancy));
 
-	char fen[] = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; //Testing FEN
+	char fen[] = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPpP/R3K2R b KQkq a3 0 1"; //Testing FEN
 
 
 	
@@ -27,6 +27,12 @@ int main()
 	parse_FEN(fen);
 
 	print_board();
+
+	//print_bitBoard(piece_boards[bK]);
+
+	//print_bitBoard(pawn_attacks[Black][e6] & occupancies[White]);
+	
+
 
 	generate_moves();
 
